@@ -3,7 +3,7 @@ const {StatusCodes} = require('http-status-codes')
 
 const authenticate = async (req, res, next) => {
     try {
-        const {token} = req.body
+        const {token} = req.headers
         const {user_id} = jwt.verify(token, process.env.JWT_SECRET)
 
         req.body.user_id = user_id
