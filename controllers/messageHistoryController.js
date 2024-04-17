@@ -23,9 +23,26 @@ const getPrivateMessageHistory = async (req, res) => {
     }
 
     let messages = await MessagesUser.find({$or: [{sender_id, receiver_id}, {sender_id: receiver_id, receiver_id: sender_id}]})
-                                     .select('message timestamp -_id')
+                                     .select('sender_id message timestamp -_id')
 
     res.status(StatusCodes.OK).json({messages})
 }
 
-module.exports = {getPrivateMessageHistory}
+const getGroupMessageHistory = async (req, res) => {
+    const {group_id, user_id: sender_id} = req.body
+    if (!group_id) {
+        res.status(StatusCodes.BAD_REQUEST).send('Please specify group id')
+        return
+    }
+
+    if (!await MemberOf.findOne({user_id: sender_id}) || !await Group.findOne({group_id})) {
+        res.status(StatusCodes.BAD_REQUEST).send('Given group id does not exist')
+        return
+    }
+
+    let messages = await MessagesGroup.find({group_id}).select('sender_id message timestamp -_id')
+
+    res.status(StatusCodes.OK).json({messages})
+}
+
+module.exports = {getPrivateMessageHistory, getGroupMessageHistory}
