@@ -38,6 +38,7 @@ const joinSocketRoom = require('./middleware/joinSocketRoom')
 
 // Event listeners
 const messageEventListener = require('./event-listener/messageEventListener')
+const groupEventListener = require('./event-listener/groupEventListener')
 
 const express = require('express')
 const app = express()
@@ -76,6 +77,7 @@ io.use(joinSocketRoom)
 io.on('connection', (socket) => {
 
     messageEventListener(io, socket)
+    groupEventListener(io, socket)
 })
 
 const port = process.env.PORT || 3000
