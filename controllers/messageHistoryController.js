@@ -6,7 +6,8 @@ const MemberOf = require('../models/member_of')
 const {StatusCodes} = require('http-status-codes')
 
 const getPrivateMessageHistory = async (req, res) => {
-    const {receiver_id, user_id: sender_id} = req.body
+    const {receiver_id} = req.headers
+    const {user_id: sender_id} = req.body
     if (!receiver_id) {
         res.status(StatusCodes.BAD_REQUEST).send('Please specify receiver id')
         return
@@ -29,7 +30,8 @@ const getPrivateMessageHistory = async (req, res) => {
 }
 
 const getGroupMessageHistory = async (req, res) => {
-    const {group_id, user_id: sender_id} = req.body
+    const {group_id} = req.headers
+    const {user_id: sender_id} = req.body
     if (!group_id) {
         res.status(StatusCodes.BAD_REQUEST).send('Please specify group id')
         return
