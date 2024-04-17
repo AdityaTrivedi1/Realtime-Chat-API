@@ -9,7 +9,7 @@ const authenticate = async (req, res, next) => {
         req.body.user_id = user_id
         next()
     } catch (err) {
-        res.status(StatusCodes.UNAUTHORIZED).send('User either not registered or not logged in')
+        res.status(StatusCodes.UNAUTHORIZED).send('User not logged in')
     }
 }
 

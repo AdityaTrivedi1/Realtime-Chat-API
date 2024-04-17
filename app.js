@@ -20,6 +20,9 @@ const mongoSanitize = require('express-mongo-sanitize')
 // authRoute
 const authRoute = require('./routes/authRoutes')
 
+// availableContactRoute
+const availableContactRoute = require('./routes/availableContactRoute')
+
 const express = require('express')
 const app = express()
 
@@ -42,6 +45,7 @@ app.get('/api/v1', (req, res) => {
 })
 
 app.use('/api/v1/auth', authRoute)
+app.use('/api/v1/available-contacts', availableContactRoute)
 
 app.use(notFound)
 app.use(customErrorHandler)
