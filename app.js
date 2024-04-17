@@ -17,14 +17,33 @@ const cors = require('cors')
 const xss = require('xss-clean')
 const mongoSanitize = require('express-mongo-sanitize')
 
+// socket.io
+const http = require('http')
+const socketio = require('socket.io')
+
 // authRoute
 const authRoute = require('./routes/authRoutes')
 
 // availableContactRoute
 const availableContactRoute = require('./routes/availableContactRoute')
 
+// messageHistoryRoute
+const messageHistoryRoute = require('./routes/messageHistoryRoute')
+
+// websocket authenticator
+const authenticateWebsocket = require('./middleware/authenticateWebsocket')
+
+// join room function
+const joinSocketRoom = require('./middleware/joinSocketRoom')
+
+// Event listeners
+const messageEventListener = require('./event-listener/messageEventListener')
+
 const express = require('express')
 const app = express()
+
+const server = http.createServer(app)
+const io = new socketio.Server(server)
 
 
 app.set('trust proxy', 1)
@@ -46,17 +65,25 @@ app.get('/api/v1', (req, res) => {
 
 app.use('/api/v1/auth', authRoute)
 app.use('/api/v1/available-contacts', availableContactRoute)
+app.use('/api/v1/message-history', messageHistoryRoute)
 
 app.use(notFound)
 app.use(customErrorHandler)
 
+io.use(authenticateWebsocket)
+io.use(joinSocketRoom)
+
+io.on('connection', (socket) => {
+
+    messageEventListener(io, socket)
+})
 
 const port = process.env.PORT || 3000
 
 const start = async () => {
     try {
         connectDB(process.env.MONGO_URI)
-        app.listen(port)
+        server.listen(port)
         console.log(port, `Server is listening on port ${port}...`)
     } catch (error) {
         console.log('Unable to start server')
